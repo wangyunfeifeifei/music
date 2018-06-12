@@ -28,14 +28,22 @@
         </li>
       </ul>
     </div>
+    <div class="list-fixed" v-show="fixedTitle" ref="fixed" >
+      <h1 class="fixed-title">{{fixedTitle}}</h1>
+    </div>
+    <div v-show="!data.length" class="loading-container">
+      <loading />
+    </div>
   </scroll>
 </template>
 
 <script type="text/ecmascript-6">
 import Scroll from 'base/scroll/scroll'
+import Loading from 'base/loading/loading'
 import {getData} from 'common/js/dom'
 
 const ANCHOR_HEIGHT = 18
+const FIXED_HEIGHT = 30
 
 export default {
   created() {
@@ -47,7 +55,8 @@ export default {
   data() {
     return {
       scrollY: -1,
-      currentIndex: 0
+      currentIndex: 0,
+      diff: -1
     }
   },
   props: {
@@ -63,6 +72,12 @@ export default {
       return this.data.map(val => {
         return val.title.substr(0, 1)
       })
+    },
+    fixedTitle() {
+      if (this.scrollY > 0) {
+        return ''
+      }
+      return this.data[this.currentIndex] ? this.data[this.currentIndex].title : ''
     }
   },
   methods: {
@@ -91,6 +106,7 @@ export default {
       this.$refs.listview.scrollToElement(this.$refs.listGroup[index], 0)
     },
     _calculateHeight() {
+      // 计算每个部分`距离顶部`的距离
       this.listHeight = []
       const list = this.$refs.listGroup
       let height = 0
@@ -120,15 +136,25 @@ export default {
         let height2 = listHeight[i + 1]
         if (!height2 || (-newY >= height1 && -newY < height2)) {
           this.currentIndex = i
+          this.diff = height2 + newY
           return
         }
       }
       // 滚动到底部，且-newY大于最后的上线
       this.currentIndex = listHeight.length - 2
+    },
+    diff(newVal) {
+      // diff 是这个部分距离顶部的距离和滚动距离的差 也就是fixedtitle漏出来的高度
+      let fixedTop = (newVal > 0 && newVal < FIXED_HEIGHT) ? newVal - FIXED_HEIGHT : 0
+      if (this.fixedTop === fixedTop) {
+        return
+      }
+      this.fixedTop = fixedTop
+      this.$refs.fixed.style.transform = `translate3d(0, ${fixedTop}px, 0)`
     }
   },
   components: {
-    Scroll
+    Scroll, Loading
   }
 }
 </script>
