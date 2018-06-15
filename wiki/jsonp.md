@@ -7,6 +7,10 @@
 jsonp(url, option, (err, data) => {
 })
 原理： 新建一个<sctipt> 标签，script标签自动发送get请求，然后由预定义的函数执行
+option 一般为
+{
+  param: 'jsonpCallback'
+}
 ```
 
 ## Promise封装
