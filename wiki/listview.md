@@ -1,4 +1,11 @@
+# listview组件的设计
+*listview组件效果如下*
+![listview组件](http://m.qpic.cn/psb?/V135adQX2ysfYo/O3LYuIWyzylqfPVhV8bJ4w.VNHJAGvd0xvI34HwT*Xw!/b/dEMBAAAAAAAA&bo=eQGZAgAAAAADB8E!&rf=viewer_4)
+
+### 模板的实现
+```html
 <template>
+<!-- 用一个scroll组件将整个组件包裹 -->
   <scroll class="listview"
           :data="data"
           ref="listview"
@@ -6,6 +13,7 @@
           :probeType="probeType"
           @scroll="scroll"
   >
+  <!-- 这里是滚动列表的区域 -->
     <ul>
       <li v-for="(group,index) in data" class="list-group" :key="index" ref="listGroup">
         <h2 class="list-group-title">{{group.title}}</h2>
@@ -17,6 +25,7 @@
         </ul>
       </li>
     </ul>
+    <!-- 这里是右侧快速入口的区域 -->
     <div class="list-shortcut" @touchstart="onShortcutTouchStart" @touchmove.stop.prevent="onShortcutTouchMove">
       <ul>
         <li v-for="(item, index) in shortcutList"
@@ -28,6 +37,7 @@
         </li>
       </ul>
     </div>
+    <!-- 这里是滚动固定标题 -->
     <div class="list-fixed" v-show="fixedTitle" ref="fixed" >
       <h1 class="fixed-title">{{fixedTitle}}</h1>
     </div>
@@ -36,8 +46,10 @@
     </div>
   </scroll>
 </template>
+```
 
-<script type="text/ecmascript-6">
+### 逻辑部分
+```javascript
 import Scroll from 'base/scroll/scroll'
 import Loading from 'base/loading/loading'
 import {getData} from 'common/js/dom'
@@ -167,10 +179,11 @@ export default {
     Scroll, Loading
   }
 }
-</script>
+```
 
-<style scoped lang="stylus" rel="stylesheet/stylus">
-  @import "~common/stylus/variable"
+### 样式部分
+```css
+ @import "~common/stylus/variable"
 
   .listview
     position: relative
@@ -235,4 +248,4 @@ export default {
       width: 100%
       top: 50%
       transform: translateY(-50%)
-</style>
+```
