@@ -7,15 +7,26 @@
     <!-- 标题 -->
     <h1 class="title" v-html="title"></h1>
     <!-- 背景图片 -->
-    <div class="bg-image" :style="bgStyle">
+    <div class="bg-image" :style="bgStyle" ref="bgImage">
       <!-- 这个filter起的作用是模糊背景 -->
-      <div class="filter">
+      <div class="filter" ref="filter">
       </div>
     </div>
+    <div class="bg-layer" ref="layer"></div>
+    <scroll @scroll="scroll" :probe-type="probeType" :listen-scroll="listenScroll" :data="songs" class="list" ref="list">
+      <div class="song-list-wrapper">
+        <song-list :songs="songs"></song-list>
+      </div>
+    </scroll>
   </div>
 </template>
 
 <script>
+import Scroll from 'base/scroll/scroll'
+import SongList from 'base/song-list/song-list'
+
+const BACK_HEIGHT = 42
+
 export default {
   props: {
     bgImage: {
@@ -36,10 +47,66 @@ export default {
       default: ''
     }
   },
+  data() {
+    return {
+      scrollY: 0
+    }
+  },
   computed: {
     bgStyle() {
       return `background-image: url(${this.bgImage})`
     }
+  },
+  created() {
+    this.probeType = 3
+    this.listenScroll = true
+  },
+  mounted() {
+    // 将音乐列表的开始等于背景图片的高度
+    this.imageHeight = this.$refs.bgImage.clientHeight
+    this.minTranslateY = -this.imageHeight + BACK_HEIGHT
+    this.$refs.list.$el.style.top = `${this.imageHeight}px`
+  },
+  methods: {
+    scroll(pos) {
+      this.scrollY = pos.y
+    }
+  },
+  watch: {
+    scrollY(newY) {
+      // 超过一定距离就不偏移了
+      let zIndex = 0
+      const percent = Math.abs(newY / this.imageHeight) // 计算缩放比例
+      let scale = 1 // 真正缩放多少
+      let blur = 0 // 计算模糊度
+      if (newY > 0) {
+        scale += percent
+        zIndex = 10
+      } else {
+        blur = Math.min(20 * percent, 20)
+      }
+      this.$refs.filter.style['backdrop-filter'] = `blur(${blur}px)`
+      this.$refs.filter.style['webkitBackdrop-filter'] = `blur(${blur}px)` // 实现高斯模糊，只有ios端才能体现
+      if (newY < this.minTranslateY) {
+        // 滚动到顶部
+        zIndex = 10
+        this.$refs.bgImage.style.paddingTop = 0
+        this.$refs.bgImage.style.height = `${BACK_HEIGHT}px`
+      } else {
+        // 未滚动到顶部
+        this.$refs.layer.style['transform'] = `translate3d(0, ${newY}px, 0)`
+        this.$refs.layer.style['webkitTransform'] = `translate3d(0, ${newY}px, 0)`
+
+        this.$refs.bgImage.style.paddingTop = `70%`
+        this.$refs.bgImage.style.height = 0
+      }
+      this.$refs.bgImage.style.zIndex = `${zIndex}`
+      this.$refs.bgImage.style['transform'] = `scale(${scale})`
+      this.$refs.bgImage.style['webkitTransform'] = `scale(${scale})`
+    }
+  },
+  components: {
+    Scroll, SongList
   }
 }
 </script>

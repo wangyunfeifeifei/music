@@ -23,7 +23,7 @@ export default {
       type: Boolean,
       default: true
     },
-    data: { // 传入的数据
+    data: { // 传入的数据, 目的是为了监听数据变化,重新计算高度
       type: Array,
       default: () => {
         return []
