@@ -31,3 +31,39 @@ export function getData(el, name, val) {
     return el.getAttribute(name)
   }
 }
+
+let elementStyle = document.createElement('div').style
+
+// 计算供应商
+let vendor = (() => {
+  let transformNames = {
+    webkit: 'webkitTransform',
+    Moz: 'MozTransform',
+    ms: 'msTransform',
+    standard: 'transform'
+  }
+
+  for (let key in transformNames) {
+    if (elementStyle[transformNames[key]] !== undefined) {
+      return key
+    }
+  }
+
+  return false
+})()
+
+/**
+ * 根据浏览器能力来加前缀
+ * @param {String} style 某个样式
+ */
+export function prefixStyle(style) {
+  if (vendor === false) {
+    return false
+  }
+
+  if (vendor === 'standard') {
+    return style
+  }
+
+  return `${vendor}${style.charAt(0).toUpperCase()}${style.substring(1)}`
+}
