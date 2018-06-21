@@ -17,8 +17,9 @@ export default {}
     position: relative
     height: 44px
     text-align: center
-    color: $color-theme
+    color: $color-text
     font-size: 0
+    background-color: $color-theme
     .icon
       display: inline-block
       vertical-align: top
