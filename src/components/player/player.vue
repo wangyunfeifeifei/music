@@ -1,5 +1,6 @@
 <template>
   <div class="player" v-show="playlist.length">
+    <!-- 播放器正常状态 start -->
     <transition name="normal"
                 @enter="enter"
                 @after-enter="afterEnter"
@@ -35,7 +36,7 @@
               <i class="icon-prev" @click="preSong"></i>
             </div>
             <div class="icon i-center">
-              <i class="icon-play"  @click="togglePlay"></i>
+              <i :class="playIcon"  @click="togglePlay"></i>
             </div>
             <div class="icon i-right">
               <i class="icon-next" @click="nextSong"></i>
@@ -47,6 +48,8 @@
         </div>
       </div>
     </transition>
+    <!-- 播放器正常状态 end -->
+    <!-- 播放器迷你状态 start -->
     <transition name="mini">
       <div class="mini-player" v-show="!fullScreen" @click="open">
         <div class="icon" ref="iconWrapper">
@@ -62,6 +65,7 @@
         </div>
       </div>
     </transition>
+    <!-- 播放器迷你状态 end -->
     <audio :src="currentSong.url" ref="audio"></audio>
   </div>
 </template>
@@ -72,29 +76,39 @@ import createAnimation from 'create-keyframe-animation'
 
 export default {
   computed: {
+    playIcon() {
+      return this.playing ? 'icon-pause' : 'icon-play'
+    },
     ...mapGetters([
       'fullScreen',
       'playlist',
       'currentSong',
-      'currentIndex'
+      'currentIndex',
+      'playing'
     ])
   },
   methods: {
     togglePlay() {
-      this.$refs.audio.paused ? this.$refs.audio.play() : this.$refs.audio.pause()
+      // 切换播放状态
+      this.setPlayingState(!this.playing)
     },
     preSong() {
+      // 上一首歌曲
       this.currentIndex === 0 ? this.setCurrentIndex(this.playlist.length - 1) : this.setCurrentIndex(this.currentIndex - 1)
     },
     nextSong() {
+      // 下一首歌曲
       this.currentIndex === this.playlist.length - 1 ? this.setCurrentIndex(0) : this.setCurrentIndex(this.currentIndex + 1)
     },
     back() {
+      // 缩小播放器
       this.setFullScreen(false)
     },
     open() {
+      // 放大播放器
       this.setFullScreen(true)
     },
+    /* ======== 播放器的动画逻辑 start  =========== */
     enter(el, done) {
       const {x, y, scale} = this._getPosAndScale()
 
@@ -171,15 +185,24 @@ export default {
         scale
       }
     },
+    /* ======== 播放器的动画逻辑 end  =========== */
     ...mapMutations({
       setFullScreen: 'SET_FULL_SCREEN',
-      setCurrentIndex: 'SET_CURRENT_INDEX'
+      setCurrentIndex: 'SET_CURRENT_INDEX',
+      setPlayingState: 'SET_PLAYING_STATE'
     })
   },
   watch: {
     currentSong(newSong) {
       this.$nextTick(() => {
         this.$refs.audio.play()
+        this.setPlayingState(true)
+      })
+    },
+    playing(newState) {
+      // 监听playing的状态,控制播放和暂停
+      this.$nextTick(() => {
+        newState ? this.$refs.audio.play() : this.$refs.audio.pause()
       })
     }
   }
