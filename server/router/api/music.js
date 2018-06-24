@@ -10,4 +10,13 @@ music.get('/getSingerList', async (ctx) => {
   await musicController.getSingerList(ctx)
 })
 
+music.get('/getDiscList', async (ctx) => {
+  await musicController.getDiscList(ctx)
+})
+
+music.get('/getSingerDetail', async (ctx) => {
+  await musicController.getSingerDetail(ctx)
+})
+
+
 module.exports = music

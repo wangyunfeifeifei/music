@@ -11,3 +11,5 @@ export const options = {
 }
 
 export const ERR_OK = 0
+
+export const API_HOST = 'http://localhost:3000'
