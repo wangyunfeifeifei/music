@@ -21,7 +21,7 @@
         <div class="middle">
           <div class="middle-l">
             <div class="cd-wrapper" ref="cdWrapper">
-              <div class="cd">
+              <div class="cd" :class="isCdRotate">
                 <img class="image" :src="currentSong.image">
               </div>
             </div>
@@ -53,20 +53,22 @@
     <transition name="mini">
       <div class="mini-player" v-show="!fullScreen" @click="open">
         <div class="icon" ref="iconWrapper">
-          <img width="40" height="40" :src="currentSong.image">
+          <img :class="isCdRotate" width="40" height="40" :src="currentSong.image">
         </div>
         <div class="text">
           <h2 class="name" v-html="currentSong.name"></h2>
           <p class="desc" v-html="currentSong.singer"></p>
         </div>
-        <div class="control"></div>
+        <div class="control">
+          <i :class="miniPlayIcon" @click.stop="togglePlay"></i>
+        </div>
         <div class="control">
           <i class="icon-playlist"></i>
         </div>
       </div>
     </transition>
     <!-- 播放器迷你状态 end -->
-    <audio :src="currentSong.url" ref="audio"></audio>
+    <audio :src="currentSong.url" ref="audio" @canplay="ready" @error="err"></audio>
   </div>
 </template>
 
@@ -75,9 +77,20 @@ import {mapGetters, mapMutations} from 'vuex'
 import createAnimation from 'create-keyframe-animation'
 
 export default {
+  data() {
+    return {
+      currentSongReady: false
+    }
+  },
   computed: {
+    isCdRotate() {
+      return this.playing ? 'play' : 'play pause' // 这里是play pause是因为如果直接取消变成pause动画就取消了 就有个瞬间转回去的效果，很突兀
+    },
     playIcon() {
       return this.playing ? 'icon-pause' : 'icon-play'
+    },
+    miniPlayIcon() {
+      return this.playing ? 'icon-pause-mini' : 'icon-play-mini'
     },
     ...mapGetters([
       'fullScreen',
@@ -93,12 +106,31 @@ export default {
       this.setPlayingState(!this.playing)
     },
     preSong() {
+      if (!this.currentSongReady) return
       // 上一首歌曲
       this.currentIndex === 0 ? this.setCurrentIndex(this.playlist.length - 1) : this.setCurrentIndex(this.currentIndex - 1)
+      if (!this.playing) {
+        this.togglePlay()
+      }
+      this.currentSongReady = false
     },
     nextSong() {
+      if (!this.currentSongReady) return
       // 下一首歌曲
       this.currentIndex === this.playlist.length - 1 ? this.setCurrentIndex(0) : this.setCurrentIndex(this.currentIndex + 1)
+      if (!this.playing) {
+        this.togglePlay()
+      }
+      this.currentSongReady = false
+    },
+    ready() {
+      // 歌曲加载成功
+      this.currentSongReady = true
+    },
+    err() {
+      // 歌曲加载失败
+      console.log('歌曲加载错误')
+      this.currentSongReady = true
     },
     back() {
       // 缩小播放器
