@@ -28,6 +28,14 @@
           </div>
         </div>
         <div class="bottom">
+          <!-- 进度条相关 start -->
+          <div class="progress-wrapper">
+            <span class="time time-l">{{_formatTime(currentTime)}}</span>
+            <div class="progress-bar-wrapper"></div>
+            <span class="time time-r">{{_formatTime(currentSong.duration)}}</span>
+          </div>
+          <!-- 进度条相关 end -->
+          <!-- 操作区相关 start -->
           <div class="operators">
             <div class="icon i-left">
               <i class="icon-sequence"></i>
@@ -45,6 +53,7 @@
               <i class="icon icon-not-favorite"></i>
             </div>
           </div>
+          <!-- 操作区相关 end -->
         </div>
       </div>
     </transition>
@@ -68,7 +77,7 @@
       </div>
     </transition>
     <!-- 播放器迷你状态 end -->
-    <audio :src="currentSong.url" ref="audio" @canplay="ready" @error="err"></audio>
+    <audio :src="currentSong.url" ref="audio" @canplay="ready" @error="err" @timeupdate="timeUpdate"></audio>
   </div>
 </template>
 
@@ -79,7 +88,8 @@ import createAnimation from 'create-keyframe-animation'
 export default {
   data() {
     return {
-      currentSongReady: false
+      currentSongReady: false,
+      currentTime: 0 // 当前播放时间
     }
   },
   computed: {
@@ -131,6 +141,9 @@ export default {
       // 歌曲加载失败
       console.log('歌曲加载错误')
       this.currentSongReady = true
+    },
+    timeUpdate(e) {
+      this.currentTime = e.target.currentTime
     },
     back() {
       // 缩小播放器
@@ -216,6 +229,12 @@ export default {
         y,
         scale
       }
+    },
+    _formatTime(interval) {
+      interval = ~~interval
+      const minute = interval / 60 | 0
+      const second = interval % 60
+      return `${minute}:${`0${second}`.slice(-2)} ` // 格式化时间 补零
     },
     /* ======== 播放器的动画逻辑 end  =========== */
     ...mapMutations({
