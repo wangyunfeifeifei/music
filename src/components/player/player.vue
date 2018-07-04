@@ -31,7 +31,9 @@
           <!-- 进度条相关 start -->
           <div class="progress-wrapper">
             <span class="time time-l">{{_formatTime(currentTime)}}</span>
-            <div class="progress-bar-wrapper"></div>
+            <div class="progress-bar-wrapper">
+              <progress-bar :percent="percent"></progress-bar>
+            </div>
             <span class="time time-r">{{_formatTime(currentSong.duration)}}</span>
           </div>
           <!-- 进度条相关 end -->
@@ -84,6 +86,7 @@
 <script>
 import {mapGetters, mapMutations} from 'vuex'
 import createAnimation from 'create-keyframe-animation'
+import ProgressBar from 'base/progress-bar/progress-bar'
 
 export default {
   data() {
@@ -101,6 +104,9 @@ export default {
     },
     miniPlayIcon() {
       return this.playing ? 'icon-pause-mini' : 'icon-play-mini'
+    },
+    percent() {
+      return this.currentTime / this.currentSong.duration
     },
     ...mapGetters([
       'fullScreen',
@@ -256,6 +262,9 @@ export default {
         newState ? this.$refs.audio.play() : this.$refs.audio.pause()
       })
     }
+  },
+  components: {
+    ProgressBar
   }
 }
 </script>
@@ -402,9 +411,9 @@ export default {
           .time
             color: $color-text
             font-size: $font-size-small
-            flex: 0 0 30px
+            flex: 0 0 35px
             line-height: 30px
-            width: 30px
+            width: 35px
             &.time-l
               text-align: left
             &.time-r
