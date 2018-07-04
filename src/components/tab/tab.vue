@@ -6,6 +6,9 @@
     <router-link tag="div" class="tab-item" to="/singer">
       <span class="tab-link">歌手</span>
     </router-link>
+    <router-link tag="div" class="tab-item" to="/album">
+      <span class="tab-link">专辑</span>
+    </router-link>
     <router-link tag="div" class="tab-item" to="/rank">
       <span class="tab-link">排行
       </span>
