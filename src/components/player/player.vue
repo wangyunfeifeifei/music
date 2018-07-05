@@ -79,7 +79,7 @@
       </div>
     </transition>
     <!-- 播放器迷你状态 end -->
-    <audio :src="currentSong.url" ref="audio" @canplay="ready" @error="err" @timeupdate="timeUpdate"></audio>
+    <audio :src="currentSong.url" ref="audio" @canplay="ready" @error="err" @timeupdate="timeUpdate" @ended="nextSong"></audio>
   </div>
 </template>
 
