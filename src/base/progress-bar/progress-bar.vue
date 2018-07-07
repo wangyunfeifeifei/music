@@ -1,9 +1,13 @@
 <template>
   <!-- 进度条组件 -->
-  <div class="progress-bar">
-    <div class="bar-inner">
+  <div class="progress-bar" ref="bar">
+    <div class="bar-inner" @click="clickBar">
       <div class="progress" ref="progress"></div>
-      <div class="progress-btn-wrapper" ref="progressBtn">
+      <div class="progress-btn-wrapper" ref="progressBtn"
+        @touchstart.prevent="progressTouchStart"
+        @touchmove.prevent="progressTouchMove"
+        @touchend="progressTouchEnd"
+      >
         <div class="progress-btn"></div>
       </div>
     </div>
@@ -19,13 +23,49 @@ export default {
       default: 0
     }
   },
+  created() {
+    this.touch = {}
+  },
   mounted() {
     this.$refs.progress.style.transform = `scaleX(0)`
   },
+  methods: {
+    progressTouchStart(e) {
+      this.touch.initated = true
+      this.touch.startX = e.touches[0].pageX
+      this.touch.len = this.$refs.progress.clientWidth * this.percent
+      this.touch.percent = this.percent
+    },
+    progressTouchMove(e) {
+      if (!this.touch.initated) {
+        return
+      }
+      const delta = e.touches[0].pageX - this.touch.startX
+      const left = Math.min(Math.max(this.touch.len + delta, 0), this.$refs.bar.clientWidth)
+      const percent = left / this.$refs.bar.clientWidth
+      this.$refs.progress.style.transform = `scaleX(${percent})`
+      this.$refs.progressBtn.style.left = `${percent * 100}%`
+      this.touch.percent = percent
+    },
+    progressTouchEnd(e) {
+      this.touch.initated = false
+      this.__changePercent(this.touch.percent)
+    },
+    clickBar(e) {
+      let left = e.pageX - e.target.getBoundingClientRect().left
+      let percent = left / this.$refs.bar.clientWidth
+      this.$refs.progress.style.transform = `scaleX(${percent})`
+      this.$refs.progressBtn.style.left = `${percent * 100}%`
+      this.__changePercent(percent)
+    },
+    __changePercent(percent) {
+      this.$emit('changePercent', percent)
+    }
+  },
   watch: {
     percent(newPer) {
-      if (newPer >= 0) {
-        console.log(newPer)
+      if (newPer >= 0 && !this.touch.initated) {
+        // console.log(newPer)
         this.$refs.progress.style.transform = `scaleX(${newPer})`
         this.$refs.progressBtn.style.left = `${newPer * 100}%`
       }
@@ -49,6 +89,7 @@ export default {
         position: absolute
         height: 100%
         width: 100%
+        border-radius: 2px
         transform-origin: left
         background: $color-theme
       .progress-btn-wrapper

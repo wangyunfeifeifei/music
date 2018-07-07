@@ -32,7 +32,7 @@
           <div class="progress-wrapper">
             <span class="time time-l">{{_formatTime(currentTime)}}</span>
             <div class="progress-bar-wrapper">
-              <progress-bar :percent="percent"></progress-bar>
+              <progress-bar :percent="percent" @changePercent="progressPercentChange"></progress-bar>
             </div>
             <span class="time time-r">{{_formatTime(currentSong.duration)}}</span>
           </div>
@@ -241,6 +241,12 @@ export default {
       const minute = interval / 60 | 0
       const second = interval % 60
       return `${minute}:${`0${second}`.slice(-2)} ` // 格式化时间 补零
+    },
+    progressPercentChange(percent) {
+      this.$refs.audio.currentTime = this.currentSong.duration * percent
+      if (!this.playing) {
+        this.togglePlay()
+      }
     },
     /* ======== 播放器的动画逻辑 end  =========== */
     ...mapMutations({
