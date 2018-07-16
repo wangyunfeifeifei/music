@@ -220,12 +220,12 @@ export default {
           color: $color-theme
     .list-fixed
       position: absolute
-      top: 0
+      top: -1px
       left: 0
       width: 100%
       .fixed-title
-        height: 30px
-        line-height: 30px
+        height: 31px
+        line-height: 31px
         padding-left: 20px
         font-size: $font-size-small
         color: $color-text-l
