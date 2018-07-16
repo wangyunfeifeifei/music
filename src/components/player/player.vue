@@ -40,7 +40,7 @@
           <!-- 操作区相关 start -->
           <div class="operators">
             <div class="icon i-left">
-              <i class="icon-sequence"></i>
+              <i @click="changeMode" :class="iconMode"></i>
             </div>
             <div class="icon i-left">
               <i class="icon-prev" @click="preSong"></i>
@@ -90,6 +90,8 @@ import {mapGetters, mapMutations} from 'vuex'
 import createAnimation from 'create-keyframe-animation'
 import ProgressBar from 'base/progress-bar/progress-bar'
 import ProgressCircle from 'base/progress-circle/progress-circle'
+import {playMode} from 'common/js/config'
+import {shuffle} from 'common/js/util'
 
 export default {
   data() {
@@ -99,13 +101,27 @@ export default {
     }
   },
   computed: {
+    iconMode() {
+      // 播放模式按钮的图标
+      switch (this.mode) {
+        case playMode.loop:
+          return 'icon-loop'
+        case playMode.sequence:
+          return 'icon-sequence'
+        case playMode.random:
+          return 'icon-random'
+      }
+    },
     isCdRotate() {
+      // 设置cd是否转动
       return this.playing ? 'play' : 'play pause' // 这里是play pause是因为如果直接取消变成pause动画就取消了 就有个瞬间转回去的效果，很突兀
     },
     playIcon() {
+      // 播放和暂停的按钮
       return this.playing ? 'icon-pause' : 'icon-play'
     },
     miniPlayIcon() {
+      // 迷你播放器的播放和暂停
       return this.playing ? 'icon-pause-mini' : 'icon-play-mini'
     },
     percent() {
@@ -116,7 +132,9 @@ export default {
       'playlist',
       'currentSong',
       'currentIndex',
-      'playing'
+      'playing',
+      'mode',
+      'sequenceList'
     ])
   },
   methods: {
@@ -161,6 +179,17 @@ export default {
     open() {
       // 放大播放器
       this.setFullScreen(true)
+    },
+    changeMode() {
+      // 切换播放模式
+      const mode = (this.mode + 1) % 3
+      this.setPlayMode(mode)
+      if (this.mode === playMode.sequence) {
+        let arr = this.sequenceList
+        shuffle(arr, 0, this.currentIndex - 1)
+        shuffle(arr, this.currentIndex + 1, arr.length - 1)
+        this.setPlayList(arr)
+      }
     },
     /* ======== 播放器的动画逻辑 start  =========== */
     enter(el, done) {
@@ -255,7 +284,9 @@ export default {
     ...mapMutations({
       setFullScreen: 'SET_FULL_SCREEN',
       setCurrentIndex: 'SET_CURRENT_INDEX',
-      setPlayingState: 'SET_PLAYING_STATE'
+      setPlayingState: 'SET_PLAYING_STATE',
+      setPlayMode: 'SET_PLAY_MODE',
+      setPlaylist: 'SET_PLAYLIST'
     })
   },
   watch: {
