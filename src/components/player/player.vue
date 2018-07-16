@@ -71,7 +71,9 @@
           <p class="desc" v-html="currentSong.singer"></p>
         </div>
         <div class="control">
-          <i :class="miniPlayIcon" @click.stop="togglePlay"></i>
+          <progress-circle :radius="30" :percent="percent">
+            <i :class="miniPlayIcon" class="icon-mini" @click.stop="togglePlay"></i>
+          </progress-circle>
         </div>
         <div class="control">
           <i class="icon-playlist"></i>
@@ -79,7 +81,7 @@
       </div>
     </transition>
     <!-- 播放器迷你状态 end -->
-    <audio :src="currentSong.url" ref="audio" @canplay="ready" @error="err" @timeupdate="timeUpdate" @ended="nextSong"></audio>
+    <audio autoplay :src="currentSong.url" ref="audio" @canplay="ready" @error="err" @timeupdate="timeUpdate" @ended="nextSong"></audio>
   </div>
 </template>
 
@@ -87,6 +89,7 @@
 import {mapGetters, mapMutations} from 'vuex'
 import createAnimation from 'create-keyframe-animation'
 import ProgressBar from 'base/progress-bar/progress-bar'
+import ProgressCircle from 'base/progress-circle/progress-circle'
 
 export default {
   data() {
@@ -270,7 +273,8 @@ export default {
     }
   },
   components: {
-    ProgressBar
+    ProgressBar,
+    ProgressCircle
   }
 }
 </script>
@@ -505,7 +509,7 @@ export default {
           font-size: 30px
           color: $color-theme-d
         .icon-mini
-          font-size: 32px
+          font-size: 30px
           position: absolute
           left: 0
           top: 0
