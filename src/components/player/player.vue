@@ -81,7 +81,7 @@
       </div>
     </transition>
     <!-- 播放器迷你状态 end -->
-    <audio autoplay :src="currentSong.url" ref="audio" @canplay="ready" @error="err" @timeupdate="timeUpdate" @ended="nextSong"></audio>
+    <audio autoplay :src="currentSong.url" ref="audio" @canplay="ready" @error="err" @timeupdate="timeUpdate" @ended="songEnd"></audio>
   </div>
 </template>
 
@@ -159,6 +159,14 @@ export default {
         this.togglePlay()
       }
       this.currentSongReady = false
+    },
+    songEnd() {
+      if (this.mode === playMode.loop) {
+        this.$refs.audio.currentTime = 0
+        this.$refs.audio.play()
+      } else {
+        this.nextSong()
+      }
     },
     ready() {
       // 歌曲加载成功
