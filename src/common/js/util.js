@@ -16,7 +16,7 @@ function getRandomNumber(l, r) {
  * @returns {Array} 打乱后的数组
  */
 export function shuffle(arr, l = 0, r = arr.length - 1) {
-  for (let i = 0; i < r; i++) {
+  for (let i = l; i <= r; i++) {
     let rand = getRandomNumber(0, r)
     let t = arr[rand]
     arr[rand] = arr[i]

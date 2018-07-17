@@ -44,7 +44,7 @@ export default {
       &.progress-background
         transform: scale(0.9)
         stroke: $color-theme
-        opacity: 0.3
+        opacity: 0.1
       &.progress-bar
         transform: scale(0.9) rotate(-90deg)
         stroke: $color-theme

@@ -192,12 +192,17 @@ export default {
       // 切换播放模式
       const mode = (this.mode + 1) % 3
       this.setPlayMode(mode)
-      if (this.mode === playMode.sequence) {
-        let arr = this.sequenceList
-        shuffle(arr, 0, this.currentIndex - 1)
-        shuffle(arr, this.currentIndex + 1, arr.length - 1)
-        this.setPlayList(arr)
+      let list = []
+      if (this.mode === playMode.random) {
+        list = shuffle(this.sequenceList.slice())
+      } else {
+        list = this.sequenceList
       }
+      let index = list.findIndex(item => {
+        return item.id === this.currentSong.id
+      })
+      this.setCurrentIndex(index)
+      this.setPlaylist(list)
     },
     /* ======== 播放器的动画逻辑 start  =========== */
     enter(el, done) {
