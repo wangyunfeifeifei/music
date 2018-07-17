@@ -88,6 +88,31 @@ class MusicController  {
              return res.text
            })
   }
+  // 获取歌词信息
+  async getLyric(ctx) {
+    const url = 'https://c.y.qq.com/lyric/fcgi-bin/fcg_query_lyric_new.fcg'
+    const data = Object.assign({}, commonParams, {
+      platform: 'yqq',
+      needNewCode: 0,
+      songmid: ctx.query.mid,
+      pcachetime: +new Date(),
+      hostUin: 0,
+      format: 'json'
+    })
+    ctx.body = await request(url)
+      .query(data)
+      .set({
+        referer: 'https://y.qq.com/portal/player.html'
+      })
+      .then(res => {
+        if (typeof res.text === 'string') {
+          let reg = /^\w+\(({[^()]+})\)$/
+          let data = reg.exec(res.text)[1] || ''
+          return data
+        }
+        return res.text
+      })
+  }
 }
 
 module.exports = new MusicController()
