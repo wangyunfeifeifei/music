@@ -19,6 +19,7 @@
           <h2 class="subtitle" v-html="currentSong.singer"></h2>
         </div>
         <div class="middle">
+          <!-- 播放器专辑页面 start -->
           <div class="middle-l">
             <div class="cd-wrapper" ref="cdWrapper">
               <div class="cd" :class="isCdRotate">
@@ -26,6 +27,22 @@
               </div>
             </div>
           </div>
+          <!-- 播放器专辑页面 end -->
+          <!-- 播放器歌词页面 start -->
+          <Scroll class="middle-r" ref="lyricList"  :data="currentLyric && currentLyric.lines">
+            <div class="lyric-wrapper">
+              <div v-if="currentLyric">
+                <!-- 每一行的歌词 -->
+                <p ref="lyricLine"
+                  class="text"
+                   v-for="(line, index) in currentLyric.lines"
+                   :key="index"
+                   :class="{'current':currentLineNum === index}"
+                >{{line.txt}}</p>
+              </div>
+            </div>
+          </Scroll>
+          <!-- 播放器歌词页面 end -->
         </div>
         <div class="bottom">
           <!-- 进度条相关 start -->
@@ -92,12 +109,16 @@ import ProgressBar from 'base/progress-bar/progress-bar'
 import ProgressCircle from 'base/progress-circle/progress-circle'
 import {playMode} from 'common/js/config'
 import {shuffle} from 'common/js/util'
+import Lyric from 'lyric-parser'
+import Scroll from 'base/scroll/scroll'
 
 export default {
   data() {
     return {
       currentSongReady: false,
-      currentTime: 0 // 当前播放时间
+      currentTime: 0, // 当前播放时间
+      currentLyric: null,
+      currentLineNum: 0
     }
   },
   computed: {
@@ -138,6 +159,7 @@ export default {
     ])
   },
   methods: {
+    /* ======== 播放器的功能逻辑 start  =========== */
     togglePlay() {
       // 切换播放状态
       this.setPlayingState(!this.playing)
@@ -204,6 +226,33 @@ export default {
       this.setCurrentIndex(index)
       this.setPlaylist(list)
     },
+    progressPercentChange(percent) {
+      this.$refs.audio.currentTime = this.currentSong.duration * percent
+      if (!this.playing) {
+        this.togglePlay()
+      }
+    },
+    getLyric() {
+      // 获取歌词
+      this.currentSong.getLyric().then(lyric => {
+        this.currentLyric = new Lyric(lyric, this.handleLyric)
+        if (this.playing) {
+          this.currentLyric.play()
+        }
+        console.log(this.currentLyric)
+      })
+    },
+    handleLyric({lineNum, txt}) {
+      // lyric-parser 中的回调函数
+      this.currentLineNum = lineNum
+      if (lineNum > 5) {
+        let lineEl = this.$refs.lyricLine[lineNum - 5] // 将当前行 - 5行 作为第一行
+        this.$refs.lyricList.scrollToElement(lineEl, 1000)
+      } else {
+        this.$refs.lyricList.scrollTo(0, 0, 1000)
+      }
+    },
+    /* ======== 播放器的功能逻辑 end  =========== */
     /* ======== 播放器的动画逻辑 start  =========== */
     enter(el, done) {
       const {x, y, scale} = this._getPosAndScale()
@@ -265,6 +314,8 @@ export default {
       this.$refs.cdWrapper.style.animation = ''
       createAnimation.unregisterAnimation('move')
     },
+    /* ======== 播放器的动画逻辑 end  =========== */
+    /* ======== 工具方法 start  =========== */
     _getPosAndScale() {
       // 获取位置及缩放尺寸
       const targetWidth = 40 // 迷你播放器图片宽高
@@ -287,13 +338,7 @@ export default {
       const second = interval % 60
       return `${minute}:${`0${second}`.slice(-2)} ` // 格式化时间 补零
     },
-    progressPercentChange(percent) {
-      this.$refs.audio.currentTime = this.currentSong.duration * percent
-      if (!this.playing) {
-        this.togglePlay()
-      }
-    },
-    /* ======== 播放器的动画逻辑 end  =========== */
+    /* ======== 工具方法 end  =========== */
     ...mapMutations({
       setFullScreen: 'SET_FULL_SCREEN',
       setCurrentIndex: 'SET_CURRENT_INDEX',
@@ -305,7 +350,7 @@ export default {
   watch: {
     currentSong(newSong) {
       this.$nextTick(() => {
-        this.currentSong.getLyric()
+        this.getLyric()
         this.$refs.audio.play()
         this.setPlayingState(true)
       })
@@ -319,7 +364,8 @@ export default {
   },
   components: {
     ProgressBar,
-    ProgressCircle
+    ProgressCircle,
+    Scroll
   }
 }
 </script>
@@ -437,7 +483,7 @@ export default {
               color: $color-text-l
               font-size: $font-size-medium
               &.current
-                color: $color-text
+                color: $color-theme
       .bottom
         position: absolute
         bottom: 50px

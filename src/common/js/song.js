@@ -11,10 +11,15 @@ export default class Song {
 
   getLyric() {
     // 获取歌词函数
-    getLyric(this.mid).then(res => {
-      if (res.code === ERR_OK) {
-        this.lyric = Base64.decode(res.lyric) // 使用base64解码
-      }
+    return new Promise((resolve, reject) => {
+      getLyric(this.mid).then(res => {
+        if (res.code === ERR_OK) {
+          this.lyric = Base64.decode(res.lyric) // 使用base64解码
+          resolve(this.lyric)
+        } else {
+          reject(new Error('\'get lyric failed\''))
+        }
+      })
     })
   }
 }
