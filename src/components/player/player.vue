@@ -350,6 +350,9 @@ export default {
   watch: {
     currentSong(newSong) {
       this.$nextTick(() => {
+        if (this.currentLyric) {
+          this.currentLyric.stop()
+        }
         this.getLyric()
         this.$refs.audio.play()
         this.setPlayingState(true)
