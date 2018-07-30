@@ -15,6 +15,7 @@ export default class Song {
       getLyric(this.mid).then(res => {
         if (res.code === ERR_OK) {
           this.lyric = Base64.decode(res.lyric) // 使用base64解码
+          // this.lyric = atob(escape(res.lyric))
           resolve(this.lyric)
         } else {
           reject(new Error('\'get lyric failed\''))

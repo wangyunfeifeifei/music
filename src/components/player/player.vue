@@ -46,6 +46,10 @@
         </div>
         <div class="bottom">
           <!-- 进度条相关 start -->
+          <div class="dot-wrapper">
+            <span class="dot" :class="{'active': currentShow==='cd'}"></span>
+            <span class="dot" :class="{active: currentShow === 'lyric'}"></span>
+          </div>
           <div class="progress-wrapper">
             <span class="time time-l">{{_formatTime(currentTime)}}</span>
             <div class="progress-bar-wrapper">
@@ -118,7 +122,8 @@ export default {
       currentSongReady: false,
       currentTime: 0, // 当前播放时间
       currentLyric: null,
-      currentLineNum: 0
+      currentLineNum: 0,
+      currentShow: 'cd' // 当前播放器的页面
     }
   },
   computed: {
