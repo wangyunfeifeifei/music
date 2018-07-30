@@ -18,7 +18,11 @@
           <h1 class="title" v-html="currentSong.name"></h1>
           <h2 class="subtitle" v-html="currentSong.singer"></h2>
         </div>
-        <div class="middle">
+        <div class="middle"
+             @touchStart="middleTouchStart"
+             @touchMove="middleTouchMove"
+             @touchEnd="middleTouchEnd"
+        >
           <!-- 播放器专辑页面 start -->
           <div class="middle-l">
             <div class="cd-wrapper" ref="cdWrapper">
@@ -256,6 +260,12 @@ export default {
       } else {
         this.$refs.lyricList.scrollTo(0, 0, 1000)
       }
+    },
+    middleTouchStart(e) {
+    },
+    middleTouchMove(e) {
+    },
+    middleTouchEnd() {
     },
     /* ======== 播放器的功能逻辑 end  =========== */
     /* ======== 播放器的动画逻辑 start  =========== */
