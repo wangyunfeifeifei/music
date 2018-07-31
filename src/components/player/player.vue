@@ -19,12 +19,12 @@
           <h2 class="subtitle" v-html="currentSong.singer"></h2>
         </div>
         <div class="middle"
-             @touchStart="middleTouchStart"
-             @touchMove="middleTouchMove"
-             @touchEnd="middleTouchEnd"
+             @touchstart.prevent="middleTouchStart"
+             @touchmove.prevent="middleTouchMove"
+             @touchend="middleTouchEnd"
         >
           <!-- 播放器专辑页面 start -->
-          <div class="middle-l">
+          <div class="middle-l" ref="middleL">
             <div class="cd-wrapper" ref="cdWrapper">
               <div class="cd" :class="isCdRotate">
                 <img class="image" :src="currentSong.image">
@@ -262,10 +262,58 @@ export default {
       }
     },
     middleTouchStart(e) {
+      this.touch = {}
+      const touch = e.touches[0]
+      this.touch.initial = true
+      this.touch.startX = touch.pageX
+      this.touch.startY = touch.pageY
     },
     middleTouchMove(e) {
+      if (!this.touch.initial) {
+        return
+      }
+      const touch = e.touches[0]
+      const deltaX = touch.pageX - this.touch.startX
+      const deltaY = touch.pageY - this.touch.startY
+      if (Math.abs(deltaY) > Math.abs(deltaX)) {
+        // 歌词是竖向滚动， 如果纵向大于横向，则页面不滚动
+        return
+      }
+      const left = this.currentShow === 'cd' ? 0 : -window.innerWidth // 开始时cd的位置
+      const offsetLeft = Math.min(0, Math.max(left + deltaX, -window.innerWidth)) // [-window.innerWidth, 0] lyriclist的可移动区间
+      this.touch.percent = Math.abs(offsetLeft / window.innerWidth)
+      this.$refs.lyricList.$el.style.transform = `translate3d(${offsetLeft}px, 0, 0)`
+      this.$refs.middleL.style.opacity = `${1 - this.touch.percent}`
+      this.$refs.lyricList.$el.style.transitionDuration = `0`
+      this.$refs.middleL.style.transitionDuration = `0`
     },
     middleTouchEnd() {
+      let offsetLeft = 0
+      let opacity = 0
+      const time = 200 // 动画有延时
+      if (this.currentShow === 'cd') {
+        if (this.touch.percent > 0.15) {
+          this.currentShow = 'lyric'
+          offsetLeft = -window.innerWidth
+          opacity = 0
+        } else {
+          offsetLeft = 0
+          opacity = 1
+        }
+      } else {
+        if (this.touch.percent < 0.85) {
+          this.currentShow = 'cd'
+          offsetLeft = 0
+          opacity = 1
+        } else {
+          offsetLeft = -window.innerWidth
+          opacity = 0
+        }
+      }
+      this.$refs.lyricList.$el.style.transitionDuration = `${time}ms`
+      this.$refs.middleL.style.transitionDuration = `${time}ms`
+      this.$refs.lyricList.$el.style.transform = `translate3d(${offsetLeft}px, 0, 0)`
+      this.$refs.middleL.style.opacity = `${opacity}`
     },
     /* ======== 播放器的功能逻辑 end  =========== */
     /* ======== 播放器的动画逻辑 start  =========== */
@@ -517,6 +565,7 @@ export default {
             height: 8px
             border-radius: 50%
             background: $color-text-l
+            transition: width 0.2s ease-in-out
             &.active
               width: 20px
               border-radius: 5px
