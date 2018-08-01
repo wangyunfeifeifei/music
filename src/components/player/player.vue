@@ -30,6 +30,9 @@
                 <img class="image" :src="currentSong.image">
               </div>
             </div>
+            <div class="playing-lyric-wrapper">
+              <div class="playing-lyric" v-for="(lyric, index) in playingLyric" :key="index">{{lyric}}</div>
+            </div>
           </div>
           <!-- 播放器专辑页面 end -->
           <!-- 播放器歌词页面 start -->
@@ -127,7 +130,8 @@ export default {
       currentTime: 0, // 当前播放时间
       currentLyric: null,
       currentLineNum: 0,
-      currentShow: 'cd' // 当前播放器的页面
+      currentShow: 'cd', // 当前播放器的页面
+      playingLyric: ['', '', '']
     }
   },
   computed: {
@@ -172,10 +176,22 @@ export default {
     togglePlay() {
       // 切换播放状态
       this.setPlayingState(!this.playing)
+      if (this.currentLyric) {
+        this.currentLyric.togglePlay() // 切换歌词播放状态
+      }
     },
     preSong() {
       if (!this.currentSongReady) return
       // 上一首歌曲
+      if (this.playlist.length === 1) {
+        // 处理歌曲列表只有一首的情况
+        this.$refs.audio.currentTime = 0
+        this.$refs.audio.play()
+        if (this.currentLyric) {
+          this.currentLyric.seek(0) // 将歌词偏移到开始
+        }
+        return
+      }
       this.currentIndex === 0 ? this.setCurrentIndex(this.playlist.length - 1) : this.setCurrentIndex(this.currentIndex - 1)
       if (!this.playing) {
         this.togglePlay()
@@ -185,6 +201,14 @@ export default {
     nextSong() {
       if (!this.currentSongReady) return
       // 下一首歌曲
+      if (this.playlist.length === 1) {
+        this.$refs.audio.currentTime = 0
+        this.$refs.audio.play()
+        if (this.currentLyric) {
+          this.currentLyric.seek(0) // 将歌词偏移到开始
+        }
+        return
+      }
       this.currentIndex === this.playlist.length - 1 ? this.setCurrentIndex(0) : this.setCurrentIndex(this.currentIndex + 1)
       if (!this.playing) {
         this.togglePlay()
@@ -195,6 +219,9 @@ export default {
       if (this.mode === playMode.loop) {
         this.$refs.audio.currentTime = 0
         this.$refs.audio.play()
+        if (this.currentLyric) {
+          this.currentLyric.seek(0) // 将歌词偏移到开始
+        }
       } else {
         this.nextSong()
       }
@@ -240,6 +267,9 @@ export default {
       if (!this.playing) {
         this.togglePlay()
       }
+      if (this.currentLyric) {
+        this.currentLyric.seek(this.$refs.audio.currentTime * 1000) // 将歌词的时间同步
+      }
     },
     getLyric() {
       // 获取歌词
@@ -249,6 +279,10 @@ export default {
           this.currentLyric.play()
         }
         console.log(this.currentLyric)
+      }).catch(() => {
+        this.currentLyric = null
+        this.playingLyric = []
+        this.currentLineNum = 0
       })
     },
     handleLyric({lineNum, txt}) {
@@ -260,6 +294,9 @@ export default {
       } else {
         this.$refs.lyricList.scrollTo(0, 0, 1000)
       }
+      this.playingLyric[0] = this.playingLyric[1]
+      this.playingLyric[1] = txt
+      this.playingLyric[2] = this.currentLyric.lines[lineNum + 1] ? this.currentLyric.lines[lineNum + 1].txt : ''
     },
     middleTouchStart(e) {
       this.touch = {}
@@ -414,6 +451,7 @@ export default {
     currentSong(newSong) {
       this.$nextTick(() => {
         if (this.currentLyric) {
+          // 停掉前一个lyric
           this.currentLyric.stop()
         }
         this.getLyric()
@@ -533,6 +571,10 @@ export default {
               line-height: 20px
               font-size: $font-size-medium
               color: $color-text-l
+            .playing-lyric:nth-child(2)
+              transform: scale(1.3)
+              color: $color-theme
+              margin: 6px
         .middle-r
           display: inline-block
           vertical-align: top
