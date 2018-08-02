@@ -2,6 +2,7 @@ import {playMode} from 'common/js/config'
 
 const state = {
   singer: {}, // 歌手
+  disc: {}, // 歌单
   playing: false, // 是否播放中
   fullScreen: false, // 是否展开
   playlist: [], // 播放列表

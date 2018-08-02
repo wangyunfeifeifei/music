@@ -22,4 +22,8 @@ music.get('/getSongLyric', async (ctx) => {
   await musicController.getLyric(ctx)
 })
 
+music.get('/getDiscDetail', async (ctx) => {
+  await musicController.getDiscDetail(ctx)
+})
+
 module.exports = music

@@ -1,9 +1,10 @@
 const {commonParams} = require('./config')
 const request = require('superagent')
 
-class MusicController  {
+class MusicController {
   constructor() {
   }
+
   // 获取推荐页面信息
   async getRecommend(ctx) {
     const url = 'https://c.y.qq.com/musichall/fcgi-bin/fcg_yqqhomepagerecommend.fcg'
@@ -13,12 +14,13 @@ class MusicController  {
       needNewCode: 1
     })
     ctx.body = await request.get(url)
-           .query(data)
-           .then(res => {
-             return res.text
-           })
+      .query(data)
+      .then(res => {
+        return res.text
+      })
   }
-  //获取歌单列表
+
+  // 获取歌单列表
   async getDiscList(ctx) {
     const url = 'https://c.y.qq.com/splcloud/fcgi-bin/fcg_get_diss_by_tag.fcg'
     const data = Object.assign({}, commonParams, {
@@ -36,15 +38,42 @@ class MusicController  {
       format: 'json'
     })
     ctx.body = await request.get(url)
-           .query(data)
-           .set({
-            referer: 'https://y.qq.com/portal/playlist.html'
-           })
-           .set('host', 'c.y.qq.com')
-           .then(res => {
-              return res
-           })
+      .query(data)
+      .set({
+        referer: 'https://y.qq.com/portal/playlist.html'
+      })
+      .set('host', 'c.y.qq.com')
+      .then(res => {
+        return res
+      })
   }
+  // 获取歌单详情
+  async getDiscDetail(ctx) {
+    const url = 'https://c.y.qq.com/qzone/fcg-bin/fcg_ucc_getcdinfo_byids_cp.fcg'
+    // TODO 获取歌单详情
+    const data = Object.assign({}, commonParams, {
+      disstid: ctx.query.disstid,
+      type: 1,
+      json: 1,
+      urf8: 1,
+      onlysong: 0,
+      format: 'json',
+      g_tk: 668456545,
+      loginUin: 981525928,
+      hostUin: 0,
+      platform: 'yqq',
+      needNewCode: 0
+    })
+    ctx.body = await request.get(url)
+      .query(data)
+      .set('referer', 'https://y.qq.com/n/yqq/playsquare/3269852386.html')
+      .then(res => {
+        console.log(ctx.query.dissid)
+        console.log(res.text)
+        return res.text
+      })
+  }
+
   // 获取歌手列表
   async getSingerList(ctx) {
     const url = 'https://c.y.qq.com/v8/fcg-bin/v8.fcg'
@@ -61,12 +90,13 @@ class MusicController  {
       needNewCode: 0
     })
     ctx.body = await request.get(url)
-                    .query(data)
-                    .then(res => {
-                      return res.text
-                    })
+      .query(data)
+      .then(res => {
+        return res.text
+      })
 
   }
+
   // 获取歌手详情
   async getSingerDetail(ctx) {
     const url = 'https://c.y.qq.com/v8/fcg-bin/fcg_v8_singer_track_cp.fcg'
@@ -83,11 +113,12 @@ class MusicController  {
       songstatus: 1
     })
     ctx.body = await request.get(url)
-           .query(data)
-           .then(res => {
-             return res.text
-           })
+      .query(data)
+      .then(res => {
+        return res.text
+      })
   }
+
   // 获取歌词信息
   async getLyric(ctx) {
     const url = 'https://c.y.qq.com/lyric/fcgi-bin/fcg_query_lyric_new.fcg'

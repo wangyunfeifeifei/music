@@ -18,3 +18,11 @@ export function getDiscList() {
       return res.data
     })
 }
+
+export function getDiscDetail(disstid) {
+  const url = `${API_HOST}/api/music/getDiscDetail?disstid=${disstid}`
+  return axios.get(url)
+    .then(res => {
+      return res.data
+    })
+}

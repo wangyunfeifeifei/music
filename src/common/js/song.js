@@ -3,9 +3,9 @@ import {ERR_OK} from 'api/config'
 import {Base64} from 'js-base64'
 
 export default class Song {
-  constructor({id, mid, singer, name, album, duration, image, url}) {
+  constructor({id, mid, singer, name, album, albumid, albummid, duration, image, url}) {
     Object.assign(this, {
-      id, mid, singer, name, album, duration, image, url
+      id, mid, singer, name, album, albumid, albummid, duration, image, url
     })
   }
 
@@ -32,6 +32,8 @@ export function createSong(musicData) {
     singer: filterSinger(musicData.singer),
     name: musicData.songname,
     album: musicData.albumname,
+    albumid: musicData.albumid,
+    albummid: musicData.albummid,
     duration: musicData.interval,
     image: `http://y.gtimg.cn/music/photo_new/T002R300x300M000${musicData.albummid}.jpg?max_age=2592000`,
     url: `http://ws.stream.qqmusic.qq.com/C100${musicData.songmid}.m4a?fromtag=46` // 这里是qq音乐可用播放源
