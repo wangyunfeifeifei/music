@@ -2,8 +2,6 @@ const {commonParams} = require('./config')
 const request = require('superagent')
 
 class MusicController {
-  constructor() {
-  }
 
   // 获取推荐页面信息
   async getRecommend(ctx) {
@@ -47,10 +45,10 @@ class MusicController {
         return res
       })
   }
+
   // 获取歌单详情
   async getDiscDetail(ctx) {
     const url = 'https://c.y.qq.com/qzone/fcg-bin/fcg_ucc_getcdinfo_byids_cp.fcg'
-    // TODO 获取歌单详情
     const data = Object.assign({}, commonParams, {
       disstid: ctx.query.disstid,
       type: 1,
@@ -68,8 +66,6 @@ class MusicController {
       .query(data)
       .set('referer', 'https://y.qq.com/n/yqq/playsquare/3269852386.html')
       .then(res => {
-        console.log(ctx.query.dissid)
-        console.log(res.text)
         return res.text
       })
   }
@@ -141,6 +137,28 @@ class MusicController {
           let data = reg.exec(res.text)[1] || ''
           return data
         }
+        return res.text
+      })
+  }
+
+  // 获取排行
+  async getTopList(ctx) {
+    const url = 'https://c.y.qq.com/v8/fcg-bin/fcg_myqq_toplist.fcg'
+    const data = Object.assign({}, commonParams, {
+      g_tk: 5381,
+      uin: 0,
+      format: 'json',
+      notice: 0,
+      platform: 'h5',
+      needNewCode: 1,
+      _: 1533213793328
+    })
+    ctx.body = await request.get(url)
+      .query(data)
+      .set('referer', 'https://y.qq.com/m/index.html')
+      .set('host', 'c.y.qq.com')
+      .buffer(true)
+      .then(res => {
         return res.text
       })
   }

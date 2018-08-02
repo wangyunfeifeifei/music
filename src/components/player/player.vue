@@ -459,6 +459,8 @@ export default {
         if (this.currentLyric) {
           // 停掉前一个lyric
           this.currentLyric.stop()
+          // 初始化歌词
+          this.playingLyric = ['', '', '']
         }
         this.getLyric()
         this.$refs.audio.play()

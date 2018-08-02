@@ -16,7 +16,7 @@
           <ul>
             <li @click="selectItem(item)" v-for="item in discList" class="item" :key="item.dissid">
               <div class="icon">
-                <img width="60" height="60" v-lazy="item.imgurl" >
+                <img width="100%" v-lazy="item.imgurl" >
               </div>
               <div class="text">
                 <h2 class="name" v-html="item.creator.name"></h2>
@@ -95,7 +95,7 @@ export default {
 
 <style scoped lang="stylus" rel="stylesheet/stylus">
   @import "~common/stylus/variable"
-
+  @import "~common/stylus/mixin"
   .recommend
     position: fixed
     width: 100%
@@ -109,6 +109,9 @@ export default {
         width: 100%
         overflow: hidden
       .recommend-list
+        margin-right: -8px
+        padding: 0 10px
+        overflow:hidden
         .list-title
           height: 65px
           line-height: 65px
@@ -116,13 +119,14 @@ export default {
           font-size: $font-size-medium
           color: $color-theme
         .item
-          display: flex
+          float: left
           box-sizing: border-box
-          align-items: center
-          padding: 0 20px 20px 20px
+          width: 50%
+          padding-right: 8px
+          overflow: hidden
+          margin-bottom: 20px
           .icon
-            flex: 0 0 60px
-            width: 60px
+            width: 100%
             padding-right: 20px
           .text
             display: flex
@@ -133,10 +137,12 @@ export default {
             overflow: hidden
             font-size: $font-size-medium
             .name
-              margin-bottom: 10px
+              margin-bottom: 5px
               color: $color-text
+              no-wrap()
             .desc
               color: $color-text-d
+              no-wrap()
       .loading-container
         position: absolute
         width: 100%

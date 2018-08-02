@@ -1,7 +1,10 @@
-import jsonp from 'common/js/jsonp'
-import {commonParams, options} from './config'
+import axios from 'axios'
+import {API_HOST} from './config'
 
 export function getTopList() {
-
-  return jsonp(url, data, options)
+  const url = `${API_HOST}/api/music/getTopList`
+  return axios.get(url)
+    .then(res => {
+      return res.data
+    })
 }
