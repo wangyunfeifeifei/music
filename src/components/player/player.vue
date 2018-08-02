@@ -275,6 +275,12 @@ export default {
       // 获取歌词
       this.currentSong.getLyric().then(lyric => {
         this.currentLyric = new Lyric(lyric, this.handleLyric)
+        if (this.currentLyric.lines.length === 0) {
+          this.currentLyric.lines.push({
+            time: 0,
+            txt: '此歌曲为没有填词的纯音乐'
+          })
+        }
         if (this.playing) {
           this.currentLyric.play()
         }
