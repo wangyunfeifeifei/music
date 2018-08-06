@@ -10,9 +10,6 @@ npm install
 cd server
 npm install
 
-# 开启后台台服务
-npm run serve
-
 # 开启前台服务
 npm run dev
 

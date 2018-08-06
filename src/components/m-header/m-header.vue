@@ -31,9 +31,10 @@ export default {}
       background-size: 30px 32px
     .text
       display: inline-block
-      vertical-align: top
+      vertical-align: middle
       line-height: 44px
       font-size: $font-size-large
+      color: #fff
     .mine
       position: absolute
       top: 0
