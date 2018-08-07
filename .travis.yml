@@ -10,6 +10,9 @@ before_install:
   - echo -e "Host www.wangyf.cn\n\tStrictHostKeyChecking no\n" >> ~/.ssh/config
 after_success:
   - npm prune --production
-  - tar -jcf music.tar.bz2 dist server.js
+  - mkdir music && mv dist server.js music/
+  - cd music
+  - npm init -y && npm install express@4.16.3
+  - tar -jcf music.tar.bz2  *
   - scp music.tar.bz2 root@www.wangyf.cn:~/
-  - ssh root@www.wangyf.cn 'mkdir -p music && tar -jxf music.tar.bz2 -C music && rm music.tar.bz2 && cd music && npm init -y && npm install express@4.16.3'
+  - ssh root@www.wangyf.cn 'mkdir -p music && tar -jxvf music.tar.bz2 -C music && rm music.tar.bz2'
