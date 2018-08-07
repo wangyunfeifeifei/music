@@ -109,7 +109,7 @@
       </div>
     </transition>
     <!-- 播放器迷你状态 end -->
-    <audio autoplay :src="currentSong.url" ref="audio" @canplay="ready" @error="err" @timeupdate="timeUpdate" @ended="songEnd"></audio>
+    <audio autoplay :src="currentSong.url" id="audio" ref="audio" @canplay="ready" @error="err" @timeupdate="timeUpdate" @ended="songEnd"></audio>
   </div>
 </template>
 
@@ -133,6 +133,12 @@ export default {
       currentShow: 'cd', // 当前播放器的页面
       playingLyric: ['', '', '']
     }
+  },
+  mounted() {
+    // 移动端audio标签需要手动触发一次才能播放
+    document.activeElement.addEventListener('click', () => {
+      this.$refs.audio.play()
+    }, {once: true})
   },
   computed: {
     iconMode() {
