@@ -1,0 +1,16 @@
+language: node_js
+node_js:
+  - 8.11.3
+before_script: npm install
+script: npm run build
+before_install:
+  - openssl aes-256-cbc -K $encrypted_e35d955743be_key -iv $encrypted_e35d955743be_iv
+    -in id_rsa.enc -out ~/.ssh/id_rsa -d
+  - chmod 600 ~/.ssh/id_rsa
+  - echo -e "Host www.wangyf.cn\n\tStrictHostKeyChecking no\n" >> ~/.ssh/config
+after_success:
+  - npm prune --production
+  - tar -jcf music.tar.bz2 dist server.js
+  - scp music.tar.bz2 root@www.wangyf.cn:~/
+  - ssh root@www.wangyf.cn 'mkdir -p music && cd music && npm init -y && npm install express@4.16.3'
+  - ssh root@www.wangyf.cn 'tar -jxf music.tar.bz2 -C music && rm music.tar.bz2'
