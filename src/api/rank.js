@@ -8,3 +8,11 @@ export function getTopList() {
       return res.data
     })
 }
+
+export function getTopListDetail(topid) {
+  const url = `${API_HOST}/api/music/getTopListDetail?topid=${topid}`
+  return axios.get(url)
+    .then(res => {
+      return res.data
+    })
+}
