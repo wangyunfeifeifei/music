@@ -30,7 +30,12 @@ export default {
     ])
   },
   created() {
+    if (!this.album.album_id) {
+      this.$router.push('/album')
+      return
+    }
     this._getAlbumInfo()
+    console.log(this.album)
   },
   methods: {
     _normalizeImageUrl(mid) {
@@ -45,7 +50,6 @@ export default {
       })
     },
     _normalizeSongs(list) {
-      console.log(list)
       let ret = []
       list.forEach(item => {
         if (item.songid && item.albumid) {

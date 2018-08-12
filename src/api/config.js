@@ -12,6 +12,6 @@ export const options = {
 
 export const ERR_OK = 0
 
-// export const API_HOST = 'http://www.wangyf.cn:3000'
+export const API_HOST = 'http://www.wangyf.cn:3000'
 // export const API_HOST = 'http://192.168.43.134:3000'
-export const API_HOST = 'http://localhost:3000'
+// export const API_HOST = 'http://localhost:3000'
