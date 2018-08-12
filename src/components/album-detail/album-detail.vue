@@ -44,8 +44,11 @@ export default {
     _getAlbumInfo() {
       getAlbumInfo(this.album.album_mid).then(res => {
         if (ERR_OK === res.code) {
-          this.songs = this._normalizeSongs(res.data.list)
-          changeSongsUrl(this.songs)
+          changeSongsUrl(this._normalizeSongs(res.data.list)).then(res => {
+            console.log(res)
+            alert(1)
+            this.songs = res
+          })
         }
       })
     },

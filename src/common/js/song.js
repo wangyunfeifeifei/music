@@ -53,15 +53,14 @@ function filterSinger(singer) {
 }
 
 export function changeSongsUrl(songs) {
-  console.log(songs)
   const uid = getUid()
   const mids = songs.map(song => {
     return song.mid
   })
-  getPUrl(mids, uid).then(res => {
+  return getPUrl(mids, uid).then(res => {
     res.forEach((item, index) => {
       songs[index].url = item
     })
-    return res
+    return songs
   })
 }
