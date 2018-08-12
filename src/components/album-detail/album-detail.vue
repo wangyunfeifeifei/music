@@ -45,8 +45,6 @@ export default {
       getAlbumInfo(this.album.album_mid).then(res => {
         if (ERR_OK === res.code) {
           changeSongsUrl(this._normalizeSongs(res.data.list)).then(res => {
-            console.log(res)
-            alert(1)
             this.songs = res
           })
         }
