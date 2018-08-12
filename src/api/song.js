@@ -10,3 +10,13 @@ export function getLyric(mid) {
     return res.data
   })
 }
+
+export function getPUrl(mids, uid) {
+  const url = `${API_HOST}/api/music/getPUrl`
+
+  return axios.post(url, {
+    mids, uid
+  }).then(res => {
+    return res.data
+  })
+}

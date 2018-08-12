@@ -1,6 +1,7 @@
-import {getLyric} from 'api/song'
+import {getLyric, getPUrl} from 'api/song'
 import {ERR_OK} from 'api/config'
 import {Base64} from 'js-base64'
+import {getUid} from 'common/js/uid'
 
 export default class Song {
   constructor({id, mid, singer, name, album, albumid, albummid, duration, image, url}) {
@@ -49,4 +50,18 @@ function filterSinger(singer) {
     ret.push(s.name)
   })
   return ret.join('/')
+}
+
+export function changeSongsUrl(songs) {
+  console.log(songs)
+  const uid = getUid()
+  const mids = songs.map(song => {
+    return song.mid
+  })
+  getPUrl(mids, uid).then(res => {
+    res.forEach((item, index) => {
+      songs[index].url = item
+    })
+    return res
+  })
 }

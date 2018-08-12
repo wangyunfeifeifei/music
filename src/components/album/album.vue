@@ -2,7 +2,7 @@
   <div class="album">
     <scroll class="albumlist" :data="albumList">
       <ul>
-        <li class="item" v-for="album in albumList" :key="album.album_id">
+        <li class="item" v-for="album in albumList" :key="album.album_id" @click="selectItem(album)">
           <div class="icon">
             <img width="100%" v-lazy="_normalizeImageUrl(album.album_mid)">
           </div>
@@ -17,6 +17,7 @@
         <loading></loading>
       </div>
     </scroll>
+    <router-view></router-view>
   </div>
 </template>
 
@@ -25,6 +26,7 @@ import {getAlbumList} from 'api/album'
 import {ERR_OK} from 'api/config'
 import Scroll from 'base/scroll/scroll'
 import Loading from 'base/loading/loading'
+import {mapMutations} from 'vuex'
 
 export default {
   created() {
@@ -52,7 +54,16 @@ export default {
         ret.push(item.singer_name)
       })
       return ret.join(' / ')
-    }
+    },
+    selectItem(album) {
+      this.$router.push({
+        path: `/album/${album.album_mid}`
+      })
+      this.setAlbum(album)
+    },
+    ...mapMutations({
+      setAlbum: 'SET_ALBUM'
+    })
   },
   components: {
     Scroll, Loading

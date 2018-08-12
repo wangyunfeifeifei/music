@@ -6,6 +6,7 @@ import Singer from 'components/singer/singer'
 import Search from 'components/search/search'
 import SingerDetail from 'components/singer-detail/singer-detail'
 import Album from 'components/album/album'
+import AlbumDetail from 'components/album-detail/album-detail'
 import Disc from 'components/disc/disc'
 import TopList from 'components/top-list/top-list'
 
@@ -43,7 +44,13 @@ export default new Router({
     component: Search
   }, {
     path: '/album',
-    component: Album
+    component: Album,
+    children: [
+      {
+        path: ':id',
+        component: AlbumDetail
+      }
+    ]
   }
   ]
 })

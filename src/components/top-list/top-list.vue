@@ -38,7 +38,7 @@ export default {
   methods: {
     _getTopListDetail() {
       if (!this.topList.id) {
-        this.$reouter.push('/rank')
+        this.$router.push('/rank')
         return
       }
       getTopListDetail(this.topList.id)
