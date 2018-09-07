@@ -2,7 +2,7 @@
    <div class="search-box">
      <i class="icon-search"></i>
      <input :placeholder="placeholder" v-model="query" class="box">
-     <i v-show="query" class="icon-dismiss"></i>
+     <i v-show="query" class="icon-dismiss" @click="clear"></i>
    </div>
 </template>
 
@@ -23,10 +23,14 @@ export default {
   methods: {
     clear() {
       this.query = ''
+    },
+    setQuery(query) {
+      this.query = query
     }
   },
   created() {
     this.$watch('query', (newQuery) => {
+      //  对外暴露query事件
       this.$emit('query', newQuery)
     })
   }
